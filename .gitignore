@@ -1,0 +1,8 @@
+dist/
+.vercel/
+.import/
+node_modules/
+test-results/
+*.png
+!public/icons/*.png
+__pycache__/

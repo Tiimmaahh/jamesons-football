@@ -1,0 +1,25 @@
+name: Game checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Build and check JavaScript
+        run: |
+          python3 build.py
+          node --check dist/game.js
+          node --check dist/service-worker.js
+      - name: Install test browser
+        run: |
+          npm install --no-save playwright@1.62.1
+          npx playwright install --with-deps chromium
+      - name: Check gameplay and offline mobile app
+        run: |
+          python3 -m http.server 8000 --bind 127.0.0.1 --directory dist > /tmp/football-server.log 2>&1 &
+          node tests/smoke.cjs

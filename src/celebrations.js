@@ -1,0 +1,7 @@
+function openCelebration(team){celebrationOpened=performance.now();celebrationOverlay.hidden=false;celebrationButtons.hidden=false;celebrationPlayer.hidden=true;celebrationVideo.removeAttribute('src');document.getElementById('celebrationHeading').textContent=(team==='blue'?'HOME':'AWAY')+' TOUCHDOWN! PICK A CELEBRATION!';}
+function playCelebration(which){celebrationButtons.hidden=true;celebrationPlayer.hidden=false;const isGriddy=which==='griddy';const url=isGriddy?'https://www.youtube.com/embed/DbyIORYMzMw?autoplay=1&rel=0':'https://www.skysports.com/watch/video/13248058/amon-ra-st-brown-celebrates-touchdown-with-headstand';celebrationVideo.src=url;celebrationExternal.href=isGriddy?'https://www.youtube.com/watch?v=DbyIORYMzMw':url;document.getElementById('celebrationCaption').textContent=isGriddy?'Ja\'Marr Chase Griddy touchdown — alternate video angle':'Amon-Ra St. Brown headstand touchdown clip — this source may only play in a separate tab';}
+document.getElementById('griddyCelebration').addEventListener('click',()=>playCelebration('griddy'));
+document.getElementById('headstandCelebration').addEventListener('click',()=>playCelebration('headstand'));
+function closeCelebration(){if(celebrationOverlay.hidden)return;celebrationOverlay.hidden=true;celebrationVideo.removeAttribute('src');if(pointDecision&&pointDecision.team==='blue'){pointDecision.deadline=performance.now()+5000;pointClock.textContent='5s';}}
+document.getElementById('celebrationClose').addEventListener('click',closeCelebration);
+
