@@ -41,12 +41,12 @@ function updateKickoff(dt){
  moveToward(runner,k.direction===1?940:60,targetY,runner.speed*dt);
  for(const p of players){if(p===runner)continue;
    if(p.team===k.kicker){moveToward(p,runner.x,runner.y,p.speed*dt);
-     if(dist(p,runner)<28){finalTackler=p;ball.x=runner.x;ball.y=runner.y;tackleHistory.push(k.kicker.toUpperCase()+' #'+(p.index+1)+' tackled the kickoff returner!');showTackleDebug();finishKickoff(runner.x,'Kickoff return tackled!');return;}}
+     if(dist(p,runner)<28){finalTackler=p;ball.x=runner.x;ball.y=runner.y;tackleHistory.push(k.kicker.toUpperCase()+' #'+(p.index+1)+' tackled the kickoff returner!');finishKickoff(runner.x,'Kickoff return tackled!');return;}}
    else{moveToward(p,runner.x+(k.direction===1?38:-38),runner.y+(p.index-5)*16,p.speed*.54*dt);}}
  ball.x=runner.x;ball.y=runner.y;
  if((k.direction===1&&runner.x>=930)||(k.direction===-1&&runner.x<=70)){
    // Kickoff-return touchdowns also trigger the point choice.
-   tackleHistory.push(k.receiver.toUpperCase()+' scored a kickoff return touchdown!');showTackleDebug();
+   tackleHistory.push(k.receiver.toUpperCase()+' scored a kickoff return touchdown!');
    beginPointChoice(k.receiver);return;
  }
  if(k.time>14)finishKickoff(runner.x,'Kickoff return finished.');

@@ -34,7 +34,7 @@ if(returner){
      finalTackler=chaser;
      const who=chaser.role+(chaser.role==='OL'||chaser.role==='WR'?' #'+(chaser.index+1):'');
      status.textContent='Interception return stopped! '+who+' tackled the defender.';
-     tackleHistory.push(who+' tackled the interception returner!');showTackleDebug();
+     tackleHistory.push(who+' tackled the interception returner!');
      finishReturn();return;
    }
  }
@@ -182,12 +182,12 @@ if(carrier&&(carrier.role!=='QB'||scrambling))for(const d of players.filter(p=>p
    ball.x=clamp(qb.x+random(-22,22),45,W-45);ball.y=clamp(qb.y+random(-22,22),45,H-45);
    carrier=null;scrambling=false;
    status.textContent='QB FUMBLE! '+d.role+' #'+(d.index+1)+' knocked the ball loose!';
-   tackleHistory.push(d.role+' #'+(d.index+1)+' forced a quarterback fumble!');showTackleDebug();return;
+   tackleHistory.push(d.role+' #'+(d.index+1)+' forced a quarterback fumble!');return;
  }
  if(d.role==='LB'&&!scrambling&&Math.random()<.05){
  const droppedBy=carrier;fumble={stage:'loose',originalOffense:offenseTeam,runner:null,time:0};
  ball.x=clamp(droppedBy.x+random(-25,25),45,W-45);ball.y=clamp(droppedBy.y+random(-25,25),45,H-45);
  carrier=null;status.textContent='FUMBLE! Linebacker #'+(d.index+1)+' knocked the ball loose!';
- tackleHistory.push('Linebacker #'+(d.index+1)+' forced a fumble!');showTackleDebug();return;
+ tackleHistory.push('Linebacker #'+(d.index+1)+' forced a fumble!');return;
  }const escapeChance=scrambling&&carrier===qb?0:defenseTeam==='blue'?(d.role==='DL'?.40:d.role==='LB'?.25:.15):(d.role==='DL'?.80:d.role==='LB'?.50:.30);const roll=Math.random();const escaped=roll<escapeChance;if(escaped){logTackle(d,escapeChance,roll,true);status.textContent='Broken tackle against '+(d.role==='DL'?'D-line':d.role==='LB'?'linebacker':'defensive back')+'!';d.x+=12;d.y+=d.y<carrier.y?-20:20;}else{finalTackler=d;ball.x=carrier.x;ball.y=carrier.y;end('Tackled by '+(d.role==='DL'?'defensive lineman':d.role==='LB'?'linebacker':'defensive back')+' #'+(d.index+1)+'!');logTackle(d,escapeChance,roll,false);return;}}}}
 if(phase!=='live')return;if(carrier&&(carrier.role!=='QB'||scrambling)&&ball.x>=W-70){end('End zone!');return;}if(elapsed>=12){end('Play finished.');return;}}

@@ -13,7 +13,7 @@ function endFumbleReturn(runner,scored){
  const recoveringTeam=runner.team;
  if(scored){
   document.getElementById(recoveringTeam+'Score').textContent=Number(document.getElementById(recoveringTeam+'Score').textContent)+7;
-  tackleHistory.push(recoveringTeam.toUpperCase()+' scored on a fumble return!');showTackleDebug();
+  tackleHistory.push(recoveringTeam.toUpperCase()+' scored on a fumble return!');
   fumble=null;if(conversion){finishConversion(false);return;} beginPointChoice(recoveringTeam);return;
  }
  // Convert to actual screen position, then into the recovering team's attack direction.
@@ -32,7 +32,7 @@ function updateFumble(dt){
   for(const p of players){moveToward(p,ball.x,ball.y,p.speed*1.45*dt);}
   const picker=players.filter(p=>dist(p,ball)<=19).sort((a,b)=>dist(a,ball)-dist(b,ball))[0];
   if(picker){f.stage='return';f.runner=picker;f.time=0;carrier=picker;
-   tackleHistory.push(picker.team.toUpperCase()+' '+picker.role+' #'+(picker.index+1)+' recovered the fumble!');showTackleDebug();
+   tackleHistory.push(picker.team.toUpperCase()+' '+picker.role+' #'+(picker.index+1)+' recovered the fumble!');
    status.textContent=picker.team.toUpperCase()+' recovered! Running for the end zone!';
   }
   return;
@@ -45,7 +45,7 @@ function updateFumble(dt){
  moveToward(runner,goal,dodge,runner.speed*1.25*dt);ball.x=runner.x;ball.y=runner.y;
  for(const p of players){if(p===runner)continue;
   if(p.team!==runner.team){moveToward(p,runner.x,runner.y,p.speed*1.22*dt);
-   if(dist(p,runner)<27){finalTackler=p;tackleHistory.push(p.team.toUpperCase()+' '+p.role+' #'+(p.index+1)+' tackled the fumble returner!');showTackleDebug();endFumbleReturn(runner,false);return;}}
+   if(dist(p,runner)<27){finalTackler=p;tackleHistory.push(p.team.toUpperCase()+' '+p.role+' #'+(p.index+1)+' tackled the fumble returner!');endFumbleReturn(runner,false);return;}}
   else moveToward(p,runner.x+direction*35,runner.y+(p.index-2)*15,p.speed*.55*dt);
  }
  if((direction===1&&runner.x>=930)||(direction===-1&&runner.x<=70)){endFumbleReturn(runner,true);return;}
