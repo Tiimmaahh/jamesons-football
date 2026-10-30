@@ -45,7 +45,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
   }finally{Math.random=original;}
  };`;await route.fulfill({response,body:(await response.text()).replace('updateDownDisplay();setup();})();','updateDownDisplay();setup();'+hook+'})();')});});
  await p.goto(process.env.BASE_URL||'http://127.0.0.1:8000');
- for(const team of ['blue','red'])for(const play of ['short','deep']){
+ for(const team of ['blue','red'])for(const play of ['short','deep','sneak']){
   await p.locator('#reset').click();const r=await p.evaluate(args=>testPressure(...args),[team,play]);
   assert.equal(r.throws,750);assert.deepEqual(r.targets,[150,150,150,150,150]);
   for(const key of ['failed','noReroll','lineBlocked','pastLineBlocked','noPressure','laterPressure','handoffUnaffected'])assert(r[key],key);

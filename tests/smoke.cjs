@@ -23,7 +23,7 @@ const base = process.env.BASE_URL || 'http://127.0.0.1:8000';
     assert.equal(await page.title(), "Jameson's Football");
     assert.equal((await page.evaluate(()=>gameTest.state)).players,22);
     assert.equal(await page.locator('.helmet-svg').count(),2);
-    for (const play of ['run','short','deep']) {
+    for (const play of ['run','short','deep','sneak']) {
       await page.locator('#reset').click();
       await page.locator(`[data-play="${play}"]`).click();
       assert.equal(await page.locator('#play').inputValue(),play);
@@ -42,7 +42,7 @@ const base = process.env.BASE_URL || 'http://127.0.0.1:8000';
       assert.equal(await page.locator('#defensePlay').inputValue(),defense);
       assert.equal(await page.locator('#defenseControl [aria-pressed="true"]').count(),1);
       assert.equal(await page.locator(`[data-defense="${defense}"]`).getAttribute('aria-pressed'),'true');
-      assert.equal(await page.locator('[data-play="deep"]').getAttribute('aria-pressed'),'true');
+      assert.equal(await page.locator('[data-play="sneak"]').getAttribute('aria-pressed'),'true');
       await page.locator('#snap').click();
       assert.equal((await page.evaluate(()=>gameTest.state)).activeDefense,defense);
     }

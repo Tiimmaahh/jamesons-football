@@ -7,12 +7,14 @@ function passingOptions(){
 }
 function selectPassingOutcome(){
  const selected=passingOptions()[Math.floor(Math.random()*6)];
- if(selected.role==='QB'){
-  scrambling=true;
-  selected.pressurePassChecked=false;
-  qbRunSide=Math.random()<.5?-1:1;
-  status.textContent='QUARTERBACK RUN! QB keeps the ball and runs '+(qbRunSide<0?'LEFT!':'RIGHT!');
- }else routeReceiver=selected;
+ if(selected.role==='QB')startQuarterbackRun(selected);else routeReceiver=selected;
+}
+
+
+function startQuarterbackRun(qb){
+ scrambling=true;qb.pressurePassChecked=false;
+ qbRunSide=Math.random()<.5?-1:1;
+ status.textContent='QUARTERBACK RUN! QB keeps the ball and runs '+(qbRunSide<0?'LEFT!':'RIGHT!');
 }
 
 // A running QB gets one pressure decision, only while behind the original LOS.

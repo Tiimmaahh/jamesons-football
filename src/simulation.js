@@ -60,7 +60,7 @@ else{moveToward(o,LOS+30,oY[i],o.speed*.25*dt);moveToward(d,chaseX,chaseY,d.spee
 if(playType==='run'){if(elapsed<.48){moveToward(rb,qb.x+3,qb.y,rb.speed*dt);ball.x=qb.x;ball.y=qb.y;}else{carrier=rb;let targetX=LOS+145,targetY=runY;if(rb.x<LOS+45){targetX=LOS+45;targetY=runY;}else{targetX=W-35;targetY=runY;}moveToward(rb,targetX,targetY,rb.speed*dt);ball.x=rb.x;ball.y=rb.y;}}
 else{if(!passTarget){
  // Select exactly once: five receivers or a forward QB sneak, equally likely.
- if(!routeReceiver&&!scrambling)selectPassingOutcome();
+ if(!routeReceiver&&!scrambling){if(playType==='sneak')startQuarterbackRun(qb);else selectPassingOutcome();}
  if(scrambling){if(!tryQuarterbackPressurePass(qb)){const targetY=qbRunSide<0?63:H-63;const targetX=Math.abs(qb.y-targetY)>12?Math.min(LOS+38,W-40):W-40;moveToward(qb,targetX,targetY,qb.speed*dt);ball.x=qb.x;ball.y=qb.y;}}
  else {moveToward(qb,LOS-67,285,25*dt);ball.x=qb.x;ball.y=qb.y;}
  const readyToThrow=!passTarget&&!scrambling&&(passReceiverReady(routeReceiver)||elapsed>=1.5);

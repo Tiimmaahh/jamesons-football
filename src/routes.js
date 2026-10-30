@@ -32,7 +32,7 @@ function runningBackReady(rb){
 function receiverRouteLandmarks(p){
  const x=yards=>Math.min(LOS+yards*YARD_PIXELS,W-32);
  const start={x:p.homeX,y:p.homeY};
- if(playType==='short'){
+ if(playType!=='deep'){
   if(p.role==='TE')return [start,{x:x(5),y:p.homeY},{x:x(5),y:H-45}];
   if(p.index===1)return [start,{x:x(12),y:330},{x:W-32,y:240}];
   if(p.index===0)return [start,{x:x(10),y:p.homeY},{x:x(24),y:200},{x:W-32,y:260}];
@@ -61,7 +61,7 @@ function buildReceiverRoute(p){
  points.push(landmarks[landmarks.length-1]);
  let length=0;const distances=[0];
  for(let i=1;i<points.length;i++){length+=Math.hypot(points[i].x-points[i-1].x,points[i].y-points[i-1].y);distances.push(length);}
- return {points,distances,length,stop:playType==='short'&&p.role==='WR'&&p.index===2};
+ return {points,distances,length,stop:playType!=='deep'&&p.role==='WR'&&p.index===2};
 }
 function updateReceiverRoute(p,dt){
  const route=p.passRoute||(p.passRoute=buildReceiverRoute(p));
