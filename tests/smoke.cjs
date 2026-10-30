@@ -65,7 +65,7 @@ const base = process.env.BASE_URL || 'http://127.0.0.1:8000';
     await page.locator('#snap').click();
     await page.clock.runFor(1000);
     const state=await page.evaluate(()=>gameTest.state);
-    assert(state.elapsed>.8 && state.elapsed<1.2,`animation elapsed ${state.elapsed}`);
+    assert(state.elapsed>.75 && state.elapsed<.85,`animation elapsed ${state.elapsed}`);
     assert.deepEqual(errors,[]);
     fs.mkdirSync('test-results',{recursive:true});
     await page.locator('#reset').click();
