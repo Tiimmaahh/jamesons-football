@@ -22,7 +22,10 @@ const base = process.env.BASE_URL || 'http://127.0.0.1:8000';
     for(const p of players.filter(p=>p.team===defenseTeam)){p.x=22;p.y=550;p.speed=0;}
     let time=0;
     while(!passTarget&&phase==='live'&&time<4){update(1/60);time+=1/60;}
-    const result={threw:!!passTarget,time,receiverX:routeReceiver.x};
+    const releaseX=routeReceiver.x;
+    const catchX=Math.min(LOS+30*scale,W-32);
+    update(.1);
+    const result={threw:!!passTarget,time,releaseX,catchX,movedAfterRelease:routeReceiver.x>releaseX};
     while(phase==='live'&&time<13){update(1/60);time+=1/60;}
     return {...result,finalPhase:phase};
    };`;
@@ -33,13 +36,15 @@ const base = process.env.BASE_URL || 'http://127.0.0.1:8000';
    await page.locator('#reset').click();
    const result=await page.evaluate(({spot,team,role})=>window.testDeep(spot,team,role),{spot,team,role});
    assert(result.threw,`${team} ${role} at ${spot}: QB never threw`);
-   assert(result.time<=3.55,`${team} ${role} at ${spot}: release took ${result.time}s`);
+   assert(result.time<=1.55,`${team} ${role} at ${spot}: release took ${result.time}s`);
+   assert(result.releaseX<result.catchX-1,`${team} ${role} at ${spot}: must release before receiver stops`);
+   assert(result.movedAfterRelease,`${team} ${role} at ${spot}: receiver must keep running during throw`);
    assert.notEqual(result.finalPhase,'live','play must finish');
   }
   await page.locator('#reset').click();
   const stuck=await page.evaluate(()=>window.testDeep(90,'blue','WR',true));
-  assert(stuck.threw&&stuck.time<=3.55,'QB must attempt a pass even if his target stops moving');
+  assert(stuck.threw&&stuck.time<=1.55,'QB must attempt a pass even if his target stops moving');
   assert.deepEqual(errors,[]);
-  console.log('PASS: deep passes release at midfield, in red zone and at goal line for both teams and WR/TE; stalled routes release within 3.5s; plays finish without page errors.');
+  console.log('PASS: deep passes release at midfield, in red zone and at goal line for both teams and WR/TE; receivers keep running during flight; stalled routes release within 1.5s; plays finish without page errors.');
  }finally{await browser.close();}
 })().catch(error=>{console.error(error);process.exitCode=1;});
