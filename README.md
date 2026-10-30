@@ -66,8 +66,7 @@ Vercel must use the existing `jamesons-football` project, framework Other,
 There are no runtime packages or environment secrets required by the game.
 
 Each build derives the offline cache version from the app's contents. An installed
-copy receives an update after its existing game windows close and it is reopened
-online. Celebration videos are external and require an internet connection.
+copy automatically refreshes when a new release finishes downloading online. Celebration videos are external and require an internet connection.
 
 ## Install on iPhone
 

@@ -27,3 +27,15 @@
  header #reset{grid-column:2;grid-row:1}
  .field-scoreboard{grid-column:1 / -1;grid-row:2;justify-self:center}
 }
+
+/* Keep every celebration choice reachable inside a small football field. */
+.celebration-overlay{overflow-y:auto;justify-content:safe center}
+.celebration-overlay>*{flex-shrink:0}
+@media(max-width:600px){
+ .celebration-overlay{gap:7px;padding:8px}
+ .celebration-overlay h2{font-size:16px}
+ .celebration-buttons{gap:6px}
+ .celebration-buttons button{font-size:13px;padding:10px 12px;border-width:2px}
+ .celebration-close{font-size:13px!important;padding:8px 14px!important}
+ .celebration-player{min-height:120px}
+}
