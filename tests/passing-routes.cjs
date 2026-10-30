@@ -12,12 +12,13 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
     offenseTeam=team;defenseTeam=team==='blue'?'red':'blue';
     setDriveSpot(70+spot*YARD_PIXELS);setup();playSel.value=play;begin();
     if(animationFrame!==null){cancelAnimationFrame(animationFrame);animationFrame=null;}
-    playType=play;scrambleEligible=false;
+    playType=play;
     const receivers=eligiblePassReceivers(),target=receivers[targetIndex];
     for(const d of players.filter(p=>p.team===defenseTeam)){d.x=22;d.y=550;d.speed=0;}
     const originalRandom=Math.random;
     try{
-     Math.random=()=>(targetIndex+.5)/receivers.length;update(1/60);Math.random=()=>.99;
+     const outcomeIndex=passingOptions().indexOf(target);
+     Math.random=()=>(outcomeIndex+.5)/6;update(1/60);Math.random=()=>.99;
      const selected=routeReceiver===target;let caught=false;
      for(let i=0;i<360&&phase==='live';i++){
       update(1/60);

@@ -12,7 +12,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
     offenseTeam=team;defenseTeam=team==='blue'?'red':'blue';
     setDriveSpot(70+spot*YARD_PIXELS);setup();playSel.value=play;begin();
     if(animationFrame!==null){cancelAnimationFrame(animationFrame);animationFrame=null;}
-    playType=play;scrambleEligible=false;
+    playType=play;
     const rb=players.find(p=>p.role==='RB'),qb=players.find(p=>p.role==='QB');
     for(const p of players.filter(p=>p.team===defenseTeam)){p.x=22;p.y=550;p.speed=0;}
     const originalRandom=Math.random;Math.random=()=>.99;
@@ -23,8 +23,8 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
       for(let i=0;i<18;i++)update(1/60);
       return {before,handoff:carrier===rb,noRoute:rb.passRouteDistance===undefined};
      }
-     // The real random target selector must be able to choose RB (first eligible).
-     Math.random=()=>0;update(1/60);Math.random=()=>.99;
+     // The real random target selector must be able to choose RB (fifth equal outcome).
+     Math.random=()=>4.5/6;update(1/60);Math.random=()=>.99;
      const selected=routeReceiver===rb,startY=rb.homeY;
      let previous={x:rb.x,y:rb.y},maxStep=0,earlyForward=false,cut=false,threw=false,caught=false;
      for(let i=1;i<240;i++){

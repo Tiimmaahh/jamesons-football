@@ -15,7 +15,7 @@ const base = process.env.BASE_URL || 'http://127.0.0.1:8000';
     offenseTeam=team;defenseTeam=team==='blue'?'red':'blue';
     setDriveSpot(70+spot*YARD_PIXELS);setup();playSel.value=play;
     begin();if(animationFrame!==null){cancelAnimationFrame(animationFrame);animationFrame=null;}
-    playType=play;scrambleEligible=false;
+    playType=play;
     routeReceiver=players.find(p=>p.team===team&&p.role===role);
     if(stuck)routeReceiver.speed=0;
     // Isolate the release decision from sacks and random coverage outcomes.

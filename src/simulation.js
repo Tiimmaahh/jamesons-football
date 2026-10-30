@@ -59,19 +59,11 @@ else{moveToward(o,LOS+22,oY[i],o.speed*dt);moveToward(d,o.x+26,d.y,d.speed*dt);}
 else{moveToward(o,LOS+30,oY[i],o.speed*.25*dt);moveToward(d,chaseX,chaseY,d.speed*dt);}}
 if(playType==='run'){if(elapsed<.48){moveToward(rb,qb.x+3,qb.y,rb.speed*dt);ball.x=qb.x;ball.y=qb.y;}else{carrier=rb;let targetX=LOS+145,targetY=runY;if(rb.x<LOS+45){targetX=LOS+45;targetY=runY;}else{targetX=W-35;targetY=runY;}moveToward(rb,targetX,targetY,rb.speed*dt);ball.x=rb.x;ball.y=rb.y;}}
 else{if(!passTarget){
- // A pass-play QB can scramble only on his selected 15% roll,
- // when the pass rush is close and the intended receiver is covered.
- if(!scrambling&&scrambleEligible&&elapsed>.7){
-   const rushClose=players.some(d=>d.team===defenseTeam&&d.role==='DL'&&dist(d,qb)<125);
-   const targets=eligiblePassReceivers();
-   const allCovered=targets.length>0&&targets.every(p=>players.some(d=>d.team===defenseTeam&&(d.role==='DB'||d.role==='LB')&&dist(d,p)<95));
-   if(rushClose&&allCovered){scrambling=true;status.textContent='QUARTERBACK SCRAMBLE! No receiver open — QB runs outside!';}
- }
- if(scrambling){const targetY=scrambleSide<0?63:H-63;const tx=qb.x<LOS+15?LOS+38:W-40;moveToward(qb,tx,targetY,qb.speed*1.38*dt);ball.x=qb.x;ball.y=qb.y;}
- else {moveToward(qb,LOS-67,285,25*dt);ball.x=qb.x;ball.y=qb.y;}// Shorten routes to a reachable catch point inside the back of the end zone.
- const receivers=eligiblePassReceivers();
- if(!routeReceiver)routeReceiver=receivers[Math.floor(Math.random()*receivers.length)];
- const readyToThrow=passReceiverReady(routeReceiver)||elapsed>=1.5;
+ // Select exactly once: five receivers or a forward QB sneak, equally likely.
+ if(!routeReceiver&&!scrambling)selectPassingOutcome();
+ if(scrambling){moveToward(qb,W-40,qb.y,qb.speed*dt);ball.x=qb.x;ball.y=qb.y;}
+ else {moveToward(qb,LOS-67,285,25*dt);ball.x=qb.x;ball.y=qb.y;}
+ const readyToThrow=!scrambling&&(passReceiverReady(routeReceiver)||elapsed>=1.5);
  if(!scrambling&&readyToThrow){passTarget=routeReceiver;passOrigin={x:qb.x,y:qb.y};passElapsed=0;carrier=null;status.textContent=(playType==='deep'?'30-yard deep':'10-yard short')+' pass thrown to '+offenseTeam+' '+passTarget.role+'!';}}
 else if(!carrier){
  passElapsed+=dt;let t=clamp(passElapsed/passDuration,0,1);ball.x=passOrigin.x+(passTarget.x-passOrigin.x)*t;ball.y=passOrigin.y+(passTarget.y-passOrigin.y)*t;if(t>=1){// A nearby assigned defensive back or TE-covering linebacker can break up the throw.
