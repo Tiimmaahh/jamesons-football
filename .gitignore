@@ -6,3 +6,5 @@ test-results/
 *.png
 !public/icons/*.png
 __pycache__/
+.vercel
+.env*
