@@ -14,7 +14,7 @@ function openCelebration(team){
  const session=++celebrationSession;
  celebrationOpened=performance.now();celebrationOverlay.hidden=false;celebrationPlayer.hidden=false;
  document.getElementById('celebrationHeading').textContent=(team==='blue'?'HOME':'AWAY')+' TOUCHDOWN!';
- celebrationVideo.src='https://www.youtube.com/embed/DbyIORYMzMw?autoplay=1&mute=1&playsinline=1&rel=0&enablejsapi=1&origin='+encodeURIComponent(location.origin);
+ celebrationVideo.src='https://www.youtube.com/embed/DbyIORYMzMw?autoplay=1&mute=1&playsinline=1&rel=0&end=6&enablejsapi=1&origin='+encodeURIComponent(location.origin);
  celebrationExternal.href='https://www.youtube.com/watch?v=DbyIORYMzMw';
  document.getElementById('celebrationCaption').textContent='Griddy touchdown celebration';
  loadCelebrationApi().then(YT=>{

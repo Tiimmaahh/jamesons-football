@@ -14,6 +14,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
    assert.equal(await p.locator('#celebrationPlayer').isVisible(),true);
    const clip=new URL(await p.locator('#celebrationVideo').getAttribute('src'));
    assert(clip.pathname.endsWith('/DbyIORYMzMw'));
+   assert.equal(clip.searchParams.get('end'),'6');
    assert.equal(clip.searchParams.get('autoplay'),'1');assert.equal(clip.searchParams.get('mute'),'1');
    assert((await p.locator('#celebrationHeading').textContent()).includes(team==='blue'?'HOME':'AWAY'));
    await p.waitForFunction(()=>window.youtubeTestPlayers?.length>0);
