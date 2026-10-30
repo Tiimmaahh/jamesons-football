@@ -48,6 +48,21 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
      }
      return {counts,order,selections,sides};
     }finally{Math.random=original;}
+   };
+   window.testQBPursuit=(team,mode,side,role)=>{
+    if(animationFrame!==null){cancelAnimationFrame(animationFrame);animationFrame=null;}
+    offenseTeam=team;defenseTeam=team==='blue'?'red':'blue';setDriveSpot(285);setup();
+    playType='short';phase='live';scrambling=true;qbRunSide=side;activeDefense=mode;
+    const qb=players.find(x=>x.role==='QB');carrier=qb;qb.speed=0;
+    const defenders=players.filter(x=>x.team===defenseTeam&&x.role!=='DL');
+    for(const [i,d] of defenders.entries()){d.x=450;d.y=80+i*60;}
+    const before=defenders.map(d=>dist(d,qb));update(.1);
+    const pursuing=defenders.every((d,i)=>dist(d,qb)<before[i]);
+    const tackler=players.find(x=>x.team===defenseTeam&&x.role===role);
+    tackler.x=qb.x+10;tackler.y=qb.y;
+    const original=Math.random;Math.random=()=>.99;
+    try{update(.05);}finally{Math.random=original;}
+    return {pursuing,tackled:phase==='ended'};
    };`;
    await route.fulfill({response,body:(await response.text()).replace('updateDownDisplay();setup();})();','updateDownDisplay();setup();'+hook+'})();')});
   });
@@ -61,7 +76,12 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
    for(const outcome of r.selections.slice(0,5))assert(outcome.threw&&!outcome.sneak,JSON.stringify(outcome));
    assert(r.selections[5].forward&&r.selections[5].tackled,'sneak must run forward, keep ball, and allow tackle');
   }
+  for(const team of ['blue','red'])for(const mode of ['man','zone','blitz'])for(const side of [-1,1])for(const role of ['DL','LB','DB']){
+   await p.locator('#reset').click();
+   const r=await p.evaluate(args=>testQBPursuit(...args),[team,mode,side,role]);
+   assert(r.pursuing&&r.tackled,JSON.stringify({team,mode,side,role,r}));
+  }
   assert.deepEqual(errors,[]);
-  console.log('PASS: six equal buckets, independent 50/50 QB direction, all bucket boundaries, all five throws and QB outside runs/tackles on both pass plays for both teams.');
+  console.log('PASS: six equal buckets, independent 50/50 QB direction, all bucket boundaries, all five throws and QB outside runs/tackles on both pass plays for both teams; man/zone/blitz defenders pursue and tackle QB runs to either side.');
  }finally{await b.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

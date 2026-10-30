@@ -59,9 +59,11 @@ const base = process.env.BASE_URL || 'http://127.0.0.1:8000';
       await page.clock.runFor(20000);
     }
     await page.locator('#reset').click();
+    await page.locator('[data-play="run"]').click();
     await page.locator('#snap').click();
     await page.clock.runFor(1000);
     await page.locator('#reset').click();
+    await page.locator('[data-play="run"]').click();
     await page.locator('#snap').click();
     await page.clock.runFor(1000);
     const state=await page.evaluate(()=>gameTest.state);

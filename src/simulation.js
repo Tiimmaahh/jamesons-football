@@ -81,9 +81,18 @@ if(crowd.length>=2&&Math.random()<.48){
 const breakupChance=coverageDistance<24?.68:coverageDistance<48?.48:.12;
 if(Math.random()<breakupChance){ball.x=LOS;status.textContent=nearbyCoverage.length?'Pass broken up by coverage!':'Incomplete pass.';end(nearbyCoverage.length?'Pass broken up!':'Incomplete pass.');return;}carrier=passTarget;ball.x=carrier.x;ball.y=carrier.y;status.textContent='Catch! Defenders closing in.';}}
 else{moveToward(carrier,W-32,carrier.y,carrier.speed*dt);ball.x=carrier.x;ball.y=carrier.y;}}
-// Defensive backs cover ONLY their assigned receivers, from snap through the catch.
-// They never chase or rush the quarterback. Linebackers cover the TE or patrol underneath.
+// Defensive backs cover their assigned receivers while the QB prepares a pass.
+// A committed QB run switches coverage defenders to ball-carrier pursuit.
 for(const d of players.filter(p=>p.team===defenseTeam&&p.role!=='DL')){
+ // A committed QB run ends coverage assignments in man, zone, and blitz.
+ if(scrambling&&carrier===qb){
+  let pursuitY=qb.y;
+  const blocker=ol.find(o=>Math.abs(o.x-d.x)<43&&Math.abs(o.y-d.y)<23&&d.x>o.x);
+  if(blocker)pursuitY=blocker.y+(d.y<blocker.y?-42:42);
+  const speedFactor=dist(d,qb)>34?2.2:1.45;
+  moveToward(d,qb.x,pursuitY,d.speed*speedFactor*dt);
+  continue;
+ }
  if(defenseTeam==='blue'&&activeDefense==='blitz'&&d.role==='LB'){
    // Once the ball leaves the QB, every blitzing linebacker changes to ball pursuit.
    if(!qbStillHasBall){moveToward(d,chaseX,chaseY,d.speed*1.65*dt);continue;}
