@@ -46,8 +46,8 @@ if(returner){
  if(returnElapsed>14){status.textContent='Interception return ends.';finishReturn();return;}
  return;
 }
-// The RB runs his out route only on passes, until he receives the ball.
-if(playType!=='run'&&carrier!==rb)updateRunningBackRoute(rb,dt);
+// Eligible receivers follow their assigned routes until they catch the ball.
+if(playType!=='run')updatePassRoutes(dt);
 // After a handoff, throw or catch, rushers stop targeting the QB and follow the ball.
 const qbStillHasBall=carrier===qb;
 const chaseX=qbStillHasBall?qb.x:(carrier?carrier.x:(passTarget?passTarget.x:ball.x));
@@ -69,20 +69,11 @@ else{if(!passTarget){
  }
  if(scrambling){const targetY=scrambleSide<0?63:H-63;const tx=qb.x<LOS+15?LOS+38:W-40;moveToward(qb,tx,targetY,qb.speed*1.38*dt);ball.x=qb.x;ball.y=qb.y;}
  else {moveToward(qb,LOS-67,285,25*dt);ball.x=qb.x;ball.y=qb.y;}// Shorten routes to a reachable catch point inside the back of the end zone.
- const routeX=Math.min(LOS+(playType==='deep'?30:10)*scale,W-32);const receivers=eligiblePassReceivers();if(!routeReceiver)routeReceiver=receivers[Math.floor(Math.random()*receivers.length)];for(const p of receivers.filter(p=>p.role!=='RB'))moveToward(p,routeX,p.homeY+(p.index%2?10:-10),p.speed*1.55*dt);// If a route is delayed, attempt the pass instead of holding the ball forever.
- const readyToThrow=(routeReceiver.role==='RB'?runningBackReady(routeReceiver):routeReceiver.x>=routeReceiver.homeX+(routeX-routeReceiver.homeX)*.35)||elapsed>=1.5;
+ const receivers=eligiblePassReceivers();
+ if(!routeReceiver)routeReceiver=receivers[Math.floor(Math.random()*receivers.length)];
+ const readyToThrow=passReceiverReady(routeReceiver)||elapsed>=1.5;
  if(!scrambling&&readyToThrow){passTarget=routeReceiver;passOrigin={x:qb.x,y:qb.y};passElapsed=0;carrier=null;status.textContent=(playType==='deep'?'30-yard deep':'10-yard short')+' pass thrown to '+offenseTeam+' '+passTarget.role+'!';}}
 else if(!carrier){
- // Lead a running pass target to the catch point instead of freezing him at release.
- {
-  const catchX=Math.min(LOS+(playType==='deep'?30:10)*scale,W-32);
-  const remaining=Math.max(passDuration-passElapsed,dt);
-  for(const p of players.filter(p=>p.team===offenseTeam&&(p.role==='WR'||p.role==='TE'))){
-   const catchY=p.homeY+(p.index%2?10:-10);
-   const step=p===passTarget?Math.hypot(catchX-p.x,catchY-p.y)*Math.min(dt/remaining,1):p.speed*1.55*dt;
-   moveToward(p,catchX,catchY,step);
-  }
- }
  passElapsed+=dt;let t=clamp(passElapsed/passDuration,0,1);ball.x=passOrigin.x+(passTarget.x-passOrigin.x)*t;ball.y=passOrigin.y+(passTarget.y-passOrigin.y)*t;if(t>=1){// A nearby assigned defensive back or TE-covering linebacker can break up the throw.
 // Nearby eligible defenders get a team-specific interception roll: blue defense 25%, red defense 20%.
 const interceptionCandidates=['WR','RB'].includes(passTarget.role)?players.filter(d=>d.team===defenseTeam&&(d.role==='DB'||(d.role==='LB'&&d.index===(passTarget.role==='RB'?1:0)))&&dist(d,passTarget)<=45).sort((a,b)=>dist(a,passTarget)-dist(b,passTarget)):[];

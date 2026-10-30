@@ -16,7 +16,12 @@ if(defenseTeam==='blue'&&activeDefense==='zone'&&phase==='live'){
  const z=[[LOS+105,115],[LOS+105,285],[LOS+105,455],[LOS+250,85],[LOS+250,485],[LOS+250,210],[LOS+250,360]];
  ctx.save();ctx.setLineDash([6,6]);ctx.strokeStyle='rgba(117,204,255,.55)';ctx.fillStyle='rgba(62,159,255,.08)';
  z.forEach((point,i)=>{const ww=i<3?210:280,hh=i<3?175:165;ctx.fillRect(point[0]-ww/2,point[1]-hh/2,ww,hh);ctx.strokeRect(point[0]-ww/2,point[1]-hh/2,ww,hh);});ctx.restore();}
-for(const p of players){ctx.beginPath();ctx.arc(p.x,p.y,15,0,Math.PI*2);ctx.fillStyle=p.team==='blue'?'#1768e9':'#e3383c';ctx.fill();ctx.strokeStyle='white';ctx.lineWidth=2.5;ctx.stroke();ctx.fillStyle='white';ctx.font='bold 10px Arial';ctx.textAlign='center';ctx.save();if(!kickoff&&offenseTeam==='red'){ctx.translate(p.x,p.y+3);ctx.scale(-1,1);ctx.fillText(p.role==='OL'?'OL':p.role==='DL'?'DL':p.role,0,0);}else{ctx.fillText(p.role==='OL'?'OL':p.role==='DL'?'DL':p.role==='K'?'K':p.role==='R'?'RET':p.role,p.x,p.y+3);}ctx.restore();}
+for(const p of players){ctx.beginPath();ctx.arc(p.x,p.y,15,0,Math.PI*2);ctx.fillStyle=p.team==='blue'?'#1768e9':'#e3383c';ctx.fill();ctx.strokeStyle='white';ctx.lineWidth=2.5;ctx.stroke();
+if(p.facingQuarterback&&carrier!==p&&playType!=='run'){
+ const qb=players.find(player=>player.team===p.team&&player.role==='QB');
+ if(qb){const angle=Math.atan2(qb.y-p.y,qb.x-p.x);ctx.beginPath();ctx.moveTo(p.x+Math.cos(angle-.25)*11,p.y+Math.sin(angle-.25)*11);ctx.lineTo(p.x+Math.cos(angle)*19,p.y+Math.sin(angle)*19);ctx.lineTo(p.x+Math.cos(angle+.25)*11,p.y+Math.sin(angle+.25)*11);ctx.fillStyle='white';ctx.fill();}
+}
+ctx.fillStyle='white';ctx.font='bold 10px Arial';ctx.textAlign='center';ctx.save();if(!kickoff&&offenseTeam==='red'){ctx.translate(p.x,p.y+3);ctx.scale(-1,1);ctx.fillText(p.role==='OL'?'OL':p.role==='DL'?'DL':p.role,0,0);}else{ctx.fillText(p.role==='OL'?'OL':p.role==='DL'?'DL':p.role==='K'?'K':p.role==='R'?'RET':p.role,p.x,p.y+3);}ctx.restore();}
 const ringPlayer=carrier||(kickoff&&kickoff.stage==='return'?kickoff.returner:null)||(fumble&&fumble.stage==='return'?fumble.runner:null)||(returner?returner:null);
 const showBallRing=!ringPlayer||passTarget||tippedBall||(kickoff&&kickoff.stage==='flight')||(fumble&&fumble.stage==='loose');
 if(ringPlayer){ctx.save();ctx.beginPath();ctx.arc(ringPlayer.x,ringPlayer.y,24,0,Math.PI*2);ctx.strokeStyle='#ffd84d';ctx.lineWidth=5;ctx.shadowColor='rgba(255,215,0,.95)';ctx.shadowBlur=18;ctx.stroke();ctx.restore();}
