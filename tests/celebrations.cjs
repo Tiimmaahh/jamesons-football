@@ -5,14 +5,17 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
  let server;
  try{
   const p=await browser.newPage({viewport:{width:390,height:844},serviceWorkers:'block'});
-  await p.route('**/game.js',async r=>{const response=await r.fetch();await r.fulfill({response,body:(await response.text()).replace('updateDownDisplay();setup();})();',"updateDownDisplay();setup();window.showCelebration=()=>openCelebration('blue');})();")});});
-  await p.goto(process.env.BASE_URL||'http://127.0.0.1:8000');await p.evaluate(()=>showCelebration());
-  for(const id of ['griddyCelebration','headstandCelebration','thirdCelebration']){
-   const visible=await p.locator('#'+id).evaluate(e=>{const a=e.getBoundingClientRect(),b=document.getElementById('celebrationOverlay').getBoundingClientRect();return a.top>=b.top&&a.bottom<=b.bottom;});
-   assert(visible,id+' must fit inside the mobile field');
+  await p.route('**/game.js',async r=>{const response=await r.fetch();await r.fulfill({response,body:(await response.text()).replace('updateDownDisplay();setup();})();',"updateDownDisplay();setup();window.showCelebration=beginPointChoice;})();")});});
+  await p.goto(process.env.BASE_URL||'http://127.0.0.1:8000');for(const team of ['blue','red']){
+   await p.locator('#reset').click();await p.evaluate(team=>showCelebration(team),team);
+   assert.equal(await p.locator('#celebrationButtons').count(),0);
+   assert.equal(await p.locator('#celebrationPlayer').isVisible(),true);
+   const clip=new URL(await p.locator('#celebrationVideo').getAttribute('src'));
+   assert(clip.pathname.endsWith('/DbyIORYMzMw'));
+   assert.equal(clip.searchParams.get('autoplay'),'1');assert.equal(clip.searchParams.get('mute'),'1');
+   assert((await p.locator('#celebrationHeading').textContent()).includes(team==='blue'?'HOME':'AWAY'));
+   await p.locator('#celebrationClose').click();assert.equal(await p.locator('#celebrationVideo').getAttribute('src'),null);
   }
-  await p.locator('#thirdCelebration').click();assert((await p.locator('#celebrationVideo').getAttribute('src')).includes('HkNfQm_PCao?start=7&end=16'));
-  await p.locator('#celebrationClose').click();assert.equal(await p.locator('#celebrationVideo').getAttribute('src'),null);
   await p.close();
   let revision=0;
   server=http.createServer((req,res)=>{
@@ -31,6 +34,6 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
   assert.equal(await page.locator('main').getAttribute('data-release'),'0');revision=1;
   await page.evaluate(async()=>{const r=await navigator.serviceWorker.getRegistration();await r.update();});
   await page.waitForFunction(()=>document.querySelector('main')?.dataset.release==='1');
-  console.log('PASS: all three mobile celebration buttons fit; Team clip opens/closes; installing a new release automatically refreshes an existing controlled page.');
+  console.log('PASS: HOME/AWAY touchdowns automatically open Griddy without choices; Continue stops the clip; installing a new release automatically refreshes an existing controlled page.');
  }finally{await browser.close();if(server)await new Promise(resolve=>server.close(resolve));}
 })().catch(e=>{console.error(e);process.exitCode=1;});

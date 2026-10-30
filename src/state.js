@@ -28,5 +28,5 @@ let LOS=285,firstDownMarkerX=371;let players=[],ball={x:LOS-33,y:285},carrier=nu
 const random=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.min(b,Math.max(a,v)),dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 let kickoff=null, fumble=null, pointDecision=null, conversion=false, conversionTeam=null;let scrambling=false;
 const pointChoice=document.getElementById('pointChoice'),pointClock=document.getElementById('pointClock');
-const celebrationOverlay=document.getElementById('celebrationOverlay'), celebrationButtons=document.getElementById('celebrationButtons'), celebrationPlayer=document.getElementById('celebrationPlayer'), celebrationVideo=document.getElementById('celebrationVideo'), celebrationExternal=document.getElementById('celebrationExternal');
+const celebrationOverlay=document.getElementById('celebrationOverlay'), celebrationPlayer=document.getElementById('celebrationPlayer'), celebrationVideo=document.getElementById('celebrationVideo'), celebrationExternal=document.getElementById('celebrationExternal');
 let celebrationOpened=0;
