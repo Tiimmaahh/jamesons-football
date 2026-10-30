@@ -22,4 +22,5 @@ jobs:
       - name: Check gameplay and offline mobile app
         run: |
           python3 -m http.server 8000 --bind 127.0.0.1 --directory dist > /tmp/football-server.log 2>&1 &
+          node tests/goal-line.cjs
           node tests/smoke.cjs
