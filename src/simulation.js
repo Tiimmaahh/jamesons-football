@@ -61,7 +61,7 @@ if(playType==='run'){if(elapsed<.48){moveToward(rb,qb.x+3,qb.y,rb.speed*dt);ball
 else{if(!passTarget){
  // Select exactly once: five receivers or a forward QB sneak, equally likely.
  if(!routeReceiver&&!scrambling)selectPassingOutcome();
- if(scrambling){moveToward(qb,W-40,qb.y,qb.speed*dt);ball.x=qb.x;ball.y=qb.y;}
+ if(scrambling){const targetY=qbRunSide<0?63:H-63;const targetX=Math.abs(qb.y-targetY)>12?Math.min(LOS+38,W-40):W-40;moveToward(qb,targetX,targetY,qb.speed*dt);ball.x=qb.x;ball.y=qb.y;}
  else {moveToward(qb,LOS-67,285,25*dt);ball.x=qb.x;ball.y=qb.y;}
  const readyToThrow=!scrambling&&(passReceiverReady(routeReceiver)||elapsed>=1.5);
  if(!scrambling&&readyToThrow){passTarget=routeReceiver;passOrigin={x:qb.x,y:qb.y};passElapsed=0;carrier=null;status.textContent=(playType==='deep'?'30-yard deep':'10-yard short')+' pass thrown to '+offenseTeam+' '+passTarget.role+'!';}}

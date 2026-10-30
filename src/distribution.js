@@ -9,6 +9,7 @@ function selectPassingOutcome(){
  const selected=passingOptions()[Math.floor(Math.random()*6)];
  if(selected.role==='QB'){
   scrambling=true;
-  status.textContent='QUARTERBACK SNEAK! QB keeps the ball and runs forward!';
+  qbRunSide=Math.random()<.5?-1:1;
+  status.textContent='QUARTERBACK RUN! QB keeps the ball and runs '+(qbRunSide<0?'LEFT!':'RIGHT!');
  }else routeReceiver=selected;
 }

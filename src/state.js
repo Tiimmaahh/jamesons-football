@@ -26,7 +26,7 @@ function spotFromX(x){return clamp(Math.round((x-70)/YARD_PIXELS),1,99);}
 function setDriveSpot(x){LOS=clamp(x,85,920);ballOn=spotFromX(LOS);downs=1;firstDownYard=Math.min(100,ballOn+10);firstDownMarkerX=Math.min(930,LOS+(firstDownYard-ballOn)*YARD_PIXELS);}
 let LOS=285,firstDownMarkerX=371;let players=[],ball={x:LOS-33,y:285},carrier=null,phase='ready',last=0,elapsed=0,goalGap=2,ballOn=25,downs=1,firstDownYard=35,score=0,stopped=false,attemptTimes=new Map(),playType='run',passTarget=null,passOrigin=null,passElapsed=0,passDuration=1.30,runY=285,routeReceiver=null,returner=null,returnElapsed=0;
 const random=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.min(b,Math.max(a,v)),dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
-let kickoff=null, fumble=null, pointDecision=null, conversion=false, conversionTeam=null;let scrambling=false;
+let kickoff=null, fumble=null, pointDecision=null, conversion=false, conversionTeam=null;let scrambling=false,qbRunSide=1;
 const pointChoice=document.getElementById('pointChoice'),pointClock=document.getElementById('pointClock');
 const celebrationOverlay=document.getElementById('celebrationOverlay'), celebrationPlayer=document.getElementById('celebrationPlayer'), celebrationVideo=document.getElementById('celebrationVideo'), celebrationExternal=document.getElementById('celebrationExternal');
 let celebrationOpened=0;

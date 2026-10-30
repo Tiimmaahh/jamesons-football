@@ -14,7 +14,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
      for(let i=0;i<6000;i++){
       routeReceiver=null;scrambling=false;let draws=0;
       Math.random=()=>{draws++;return (i+.5)/6000;};selectPassingOutcome();
-      if(draws!==1)throw Error('must use exactly one draw');
+      if(draws!==(scrambling?2:1))throw Error('one outcome draw, plus one side draw only for QB');
       counts[scrambling?5:options.indexOf(routeReceiver)]++;
      }
      const order=options.map(x=>x.role+':'+x.index);
@@ -27,12 +27,12 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
       }
       setup();playType=play;phase='live';elapsed=0;last=0;routeReceiver=null;scrambling=false;
       for(const d of players.filter(x=>x.team===defenseTeam)){d.x=22;d.y=550;d.speed=0;}
-      Math.random=()=>(index+.5)/6;update(1/60);Math.random=()=>.99;
+      let outcomeDraw=0;Math.random=()=>outcomeDraw++===0?(index+.5)/6:(team==='blue'?.25:.75);update(1/60);Math.random=()=>.99;
       const qb=players.find(x=>x.role==='QB'),start={x:qb.x,y:qb.y};
       const target=routeReceiver;
       for(let i=0;i<60;i++)update(1/60);
       if(index===5){
-       const forward=qb.x>start.x&&qb.y===start.y&&carrier===qb&&passTarget===null;
+       const forward=qb.x>start.x&&(qbRunSide<0?qb.y<start.y:qb.y>start.y)&&carrier===qb&&passTarget===null;
        const defender=players.find(x=>x.team===defenseTeam&&x.role==='DB');defender.x=qb.x;defender.y=qb.y;update(1/60);
        selections.push({sneak:true,forward,tackled:phase==='ended'});
       }else{
@@ -40,7 +40,13 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
        selections.push({role:target.role,index:target.index,threw:passTarget===target,sneak:scrambling});
       }
      }
-     return {counts,order,selections};
+     const sides=[0,0];
+     for(let i=0;i<1000;i++){
+      scrambling=false;routeReceiver=null;let draw=0;
+      Math.random=()=>draw++===0?.99:(i+.5)/1000;
+      selectPassingOutcome();sides[qbRunSide<0?0:1]++;
+     }
+     return {counts,order,selections,sides};
     }finally{Math.random=original;}
    };`;
    await route.fulfill({response,body:(await response.text()).replace('updateDownDisplay();setup();})();','updateDownDisplay();setup();'+hook+'})();')});
@@ -50,11 +56,12 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
    await p.locator('#reset').click();
    const r=await p.evaluate(args=>testDistribution(...args),[team,play]);
    assert.deepEqual(r.counts,[1000,1000,1000,1000,1000,1000]);
+   assert.deepEqual(r.sides,[500,500]);
    assert.deepEqual(r.order,['WR:0','WR:2','WR:1','TE:0','RB:0','QB:0']);
    for(const outcome of r.selections.slice(0,5))assert(outcome.threw&&!outcome.sneak,JSON.stringify(outcome));
    assert(r.selections[5].forward&&r.selections[5].tackled,'sneak must run forward, keep ball, and allow tackle');
   }
   assert.deepEqual(errors,[]);
-  console.log('PASS: six equal buckets, one draw, all bucket boundaries, all five throws and forward QB sneaks/tackles on both pass plays for both teams.');
+  console.log('PASS: six equal buckets, independent 50/50 QB direction, all bucket boundaries, all five throws and QB outside runs/tackles on both pass plays for both teams.');
  }finally{await b.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});
