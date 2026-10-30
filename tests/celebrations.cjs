@@ -6,6 +6,8 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
  try{
   const p=await browser.newPage({viewport:{width:390,height:844},serviceWorkers:'block'});
   await p.route('**/game.js',async r=>{const response=await r.fetch();await r.fulfill({response,body:(await response.text()).replace('updateDownDisplay();setup();})();',"updateDownDisplay();setup();window.showCelebration=beginPointChoice;})();")});});
+  // Stub the documented YouTube API to test end events without network/video timing.
+  await p.route('https://www.youtube.com/iframe_api',r=>r.fulfill({contentType:'application/javascript',body:`window.youtubeTestPlayers=[];window.YT={PlayerState:{ENDED:0},Player:function(frame,options){this.mute=()=>{};this.playVideo=()=>{};this.destroy=()=>frame.remove();this.end=()=>options.events.onStateChange({data:0,target:this});window.youtubeTestPlayers.push(this);queueMicrotask(()=>options.events.onReady({target:this}));}};window.onYouTubeIframeAPIReady();`}));
   await p.goto(process.env.BASE_URL||'http://127.0.0.1:8000');for(const team of ['blue','red']){
    await p.locator('#reset').click();await p.evaluate(team=>showCelebration(team),team);
    assert.equal(await p.locator('#celebrationButtons').count(),0);
@@ -14,7 +16,16 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
    assert(clip.pathname.endsWith('/DbyIORYMzMw'));
    assert.equal(clip.searchParams.get('autoplay'),'1');assert.equal(clip.searchParams.get('mute'),'1');
    assert((await p.locator('#celebrationHeading').textContent()).includes(team==='blue'?'HOME':'AWAY'));
-   await p.locator('#celebrationClose').click();assert.equal(await p.locator('#celebrationVideo').getAttribute('src'),null);
+   await p.waitForFunction(()=>window.youtubeTestPlayers?.length>0);
+   await p.evaluate(()=>window.youtubeTestPlayers.at(-1).end());
+   assert.equal(await p.locator('#celebrationOverlay').isVisible(),false);
+   assert.equal(await p.locator('#celebrationVideo').getAttribute('src'),null);
+   // An old video's delayed end event cannot dismiss a later celebration.
+   await p.evaluate(()=>{window.previousVideo=window.youtubeTestPlayers.at(-1);});
+   await p.evaluate(team=>showCelebration(team),team);
+   await p.evaluate(()=>window.previousVideo.end());
+   assert.equal(await p.locator('#celebrationOverlay').isVisible(),true);
+   await p.locator('#celebrationClose').click();
   }
   await p.close();
   let revision=0;
@@ -34,6 +45,6 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
   assert.equal(await page.locator('main').getAttribute('data-release'),'0');revision=1;
   await page.evaluate(async()=>{const r=await navigator.serviceWorker.getRegistration();await r.update();});
   await page.waitForFunction(()=>document.querySelector('main')?.dataset.release==='1');
-  console.log('PASS: HOME/AWAY touchdowns automatically open Griddy without choices; Continue stops the clip; installing a new release automatically refreshes an existing controlled page.');
+  console.log('PASS: HOME/AWAY touchdowns automatically open Griddy without choices; video end returns to game; stale end events are ignored; Continue stops the clip; installing a new release automatically refreshes an existing controlled page.');
  }finally{await browser.close();if(server)await new Promise(resolve=>server.close(resolve));}
 })().catch(e=>{console.error(e);process.exitCode=1;});
