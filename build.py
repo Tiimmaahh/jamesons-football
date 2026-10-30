@@ -14,7 +14,7 @@ PUBLIC = ROOT / "public"
 DIST = ROOT / "dist"
 PARTS = [
     "state.js", "celebrations.js", "scoring.js", "kickoffs.js",
-    "formations.js", "drives.js", "returns.js", "simulation.js",
+    "formations.js", "routes.js", "drives.js", "returns.js", "simulation.js",
     "render.js", "main.js",
 ]
 

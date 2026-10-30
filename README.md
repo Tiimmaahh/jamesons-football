@@ -13,6 +13,7 @@ There is no `main.ts` in the current codebase. The original project used one lar
 | `scoring.js` | Point choices and conversions |
 | `kickoffs.js` | Kickoff and return logic |
 | `formations.js` | Team placement and movement |
+| `routes.js` | Pass eligibility and the running back out route |
 | `drives.js` | Snaps, downs and field position |
 | `returns.js` | Interceptions and fumbles |
 | `simulation.js` | Play-by-play simulation and AI |
