@@ -16,7 +16,7 @@ const base = process.env.BASE_URL || 'http://127.0.0.1:8000';
     await page.route('**/game.js', async route => {
       const response = await route.fetch();
       const source = await response.text();
-      const hook = `window.gameTest={get state(){return {phase,elapsed,players:players.length,offenseTeam,conversion,pending:animationFrame!==null};},touchdown:beginPointChoice};`;
+      const hook = `window.gameTest={get state(){return {phase,elapsed,players:players.length,offenseTeam,activeDefense,conversion,pending:animationFrame!==null};},touchdown:beginPointChoice,defend(){offenseTeam="red";defenseTeam="blue";setup();}};`;
       await route.fulfill({response,body:source.replace('updateDownDisplay();setup();})();', 'updateDownDisplay();setup();'+hook+'})();')});
     });
     await page.goto(base);
@@ -31,6 +31,20 @@ const base = process.env.BASE_URL || 'http://127.0.0.1:8000';
       assert.equal((await page.evaluate(()=>gameTest.state)).phase,'live');
       await page.clock.runFor(22000);
       assert.notEqual((await page.evaluate(()=>gameTest.state)).phase,'live');
+    }
+    for(const defense of ['man','zone','blitz']){
+      await page.locator('#reset').click();
+      await page.evaluate(()=>gameTest.defend());
+      assert.equal(await page.locator('#defenseControl').isVisible(),true);
+      assert.equal(await page.locator('#offenseControl').isVisible(),false);
+      assert.equal(await page.locator('#defensePlay').isVisible(),false);
+      await page.locator(`[data-defense="${defense}"]`).click();
+      assert.equal(await page.locator('#defensePlay').inputValue(),defense);
+      assert.equal(await page.locator('#defenseControl [aria-pressed="true"]').count(),1);
+      assert.equal(await page.locator(`[data-defense="${defense}"]`).getAttribute('aria-pressed'),'true');
+      assert.equal(await page.locator('[data-play="deep"]').getAttribute('aria-pressed'),'true');
+      await page.locator('#snap').click();
+      assert.equal((await page.evaluate(()=>gameTest.state)).activeDefense,defense);
     }
     for (const eight of [false,true]) {
       await page.locator('#reset').click();

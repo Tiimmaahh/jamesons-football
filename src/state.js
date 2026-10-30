@@ -2,7 +2,14 @@
 (()=>{'use strict';
 const canvas=document.getElementById('field'),ctx=canvas.getContext('2d'),snap=document.getElementById('snap'),reset=document.getElementById('reset'),playSel=document.getElementById('play'),status=document.getElementById('status'),yardage=document.getElementById('yardage');
 const downText=document.getElementById('downText'),downHint=document.getElementById('downHint'),downPossession=document.getElementById('downPossession');const defensePlaySel=document.getElementById('defensePlay');let activeDefense='man';const tackleDebug=document.getElementById('tackleDebug'),possession=document.getElementById('possession'),offenseControl=document.getElementById('offenseControl'),defenseControl=document.getElementById('defenseControl');let offenseTeam='blue',defenseTeam='red';let tippedBall=null;function updatePossession(){possession.textContent=(offenseTeam==='blue'?'🔵 HOME':'🔴 AWAY')+' OFFENSE';possession.style.color=offenseTeam==='blue'?'#70b9ff':'#ff8585';offenseControl.hidden=offenseTeam!=='blue';defenseControl.hidden=offenseTeam==='blue';}function switchPossession(){[offenseTeam,defenseTeam]=[defenseTeam,offenseTeam];updatePossession();}let tackleHistory=[];let finalTackler=null;
-document.querySelectorAll('.play-button').forEach(button=>button.addEventListener('click',()=>{playSel.value=button.dataset.play;document.querySelectorAll('.play-button').forEach(b=>{const active=b===button;b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active));});}));
+// Keep the offense and defense selections independent, with shared button styles.
+for(const [selector,select,key] of [['[data-play]',playSel,'play'],['[data-defense]',defensePlaySel,'defense']]){
+ const buttons=document.querySelectorAll(selector);
+ buttons.forEach(button=>button.addEventListener('click',()=>{
+  select.value=button.dataset[key];
+  buttons.forEach(b=>{const active=b===button;b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active));});
+ }));
+}
 const eventBanner=document.getElementById('eventBanner');
 function showEvent(kind,team){
  eventBanner.className='event-banner '+(team==='blue'?'home':'away');
