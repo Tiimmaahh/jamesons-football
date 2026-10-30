@@ -72,6 +72,14 @@ const base = process.env.BASE_URL || 'http://127.0.0.1:8000';
     }
     const overflow=await phone.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
     assert.equal(overflow,false,'mobile page should fit viewport');
+    const headerOverlap=await phone.evaluate(()=>{
+      const a=document.querySelector('header h1').getBoundingClientRect();
+      const b=document.querySelector('.field-scoreboard').getBoundingClientRect();
+      const c=document.querySelector('#reset').getBoundingClientRect();
+      const overlaps=(x,y)=>x.left<y.right&&x.right>y.left&&x.top<y.bottom&&x.bottom>y.top;
+      return overlaps(a,b)||overlaps(a,c)||overlaps(b,c);
+    });
+    assert.equal(headerOverlap,false,'mobile title, scoreboard and reset must not overlap');
     await phone.screenshot({path:'test-results/mobile.png',fullPage:true});
     await mobile.setOffline(true);
     await phone.reload();

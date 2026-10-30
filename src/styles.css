@@ -20,3 +20,10 @@
 .helmet-svg{width:53px;height:46px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4))}
 .helmet-blue .shell{fill:#619fd2}.helmet-blue .ear{fill:#75b0e0}.helmet-red .shell{fill:#d54d50}.helmet-red .ear{fill:#e76b70}.helmet-svg .mask{stroke:#57595b;stroke-width:12;fill:none;stroke-linecap:round;stroke-linejoin:round}.helmet-svg .ear-hole{fill:#555759}
 @media(max-width:700px){header{grid-template-columns:auto 1fr auto;gap:6px}header h1{font-size:15px;margin:0}.field-scoreboard{gap:6px;padding:6px 8px;min-width:0}.field-scoreboard .team-slot{min-width:auto;gap:5px}.field-scoreboard .score-num{font-size:28px}.helmet-svg{width:42px;height:36px}.field-scoreboard .team-name{font-size:9px}}
+
+@media(max-width:480px){
+ header{grid-template-columns:1fr auto;padding-bottom:12px}
+ header h1{grid-column:1;grid-row:1}
+ header #reset{grid-column:2;grid-row:1}
+ .field-scoreboard{grid-column:1 / -1;grid-row:2;justify-self:center}
+}
