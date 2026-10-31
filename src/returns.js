@@ -19,6 +19,7 @@ function endFumbleReturn(runner,scored){
  // Convert to actual screen position, then into the recovering team's attack direction.
  const physicalX=offenseTeam==='blue'?runner.x:W-runner.x;
  const recoveringX=recoveringTeam==='blue'?physicalX:W-physicalX;
+ if(!conversion&&finalTackler&&recoveringTeam===fumble?.originalOffense&&recoveringX<=70){awardSafety(recoveringTeam);return;}
  if(offenseTeam!==recoveringTeam){offenseTeam=recoveringTeam;defenseTeam=offenseTeam==='blue'?'red':'blue';updatePossession();}
  setDriveSpot(recoveringX);
  fumble=null;phase='ended';stopped=true;carrier=null;updateDownDisplay();snap.disabled=false;snap.textContent='NEXT PLAY';

@@ -13,7 +13,7 @@ for(const [selector,select,key] of [['[data-play]',playSel,'play'],['[data-defen
 const eventBanner=document.getElementById('eventBanner');
 function showEvent(kind,team){
  eventBanner.className='event-banner '+(team==='blue'?'home':'away');
- eventBanner.querySelector('.event-main').textContent=kind==='pick'?'PICK!':'TOUCHDOWN!';
+ eventBanner.querySelector('.event-main').textContent=kind==='pick'?'PICK!':kind==='safety'?'SAFETY!':'TOUCHDOWN!';
  eventBanner.querySelector('.event-team').textContent=kind==='pick'?'':(team==='blue'?'HOME!':'AWAY!');
  void eventBanner.offsetWidth;
  eventBanner.classList.add('show');

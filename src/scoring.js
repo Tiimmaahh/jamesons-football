@@ -20,3 +20,17 @@ function beginPointChoice(team){showEvent('touchdown',team);openCelebration(team
 document.getElementById('takeSeven').addEventListener('click',()=>choosePoints(false));document.getElementById('tryEight').addEventListener('click',()=>choosePoints(true));
 function finishConversion(success){if(!conversion)return false;const scoring=conversionTeam;conversion=false;conversionTeam=null;if(success)addPoints(scoring,2);startKickoff(scoring);status.textContent=scoring.toUpperCase()+(success?' made the two-point conversion! 8 total points.':' missed the two-point conversion. 6 total points.')+' Kickoff next.';return true;}
 
+
+function awardSafety(concedingTeam){
+ const scoringTeam=concedingTeam==='blue'?'red':'blue';
+ addPoints(scoringTeam,2);showEvent('safety',scoringTeam);
+ pointDecision=null;pointChoice.hidden=true;conversion=false;conversionTeam=null;
+ tippedBall=null;fumble=null;returner=null;scrambling=false;stopped=true;
+ closeCelebration();
+ // The team that conceded kicks, so the team awarded two points receives.
+ startKickoff(concedingTeam);
+ downText.textContent='SAFETY!';downHint.textContent='2 points — free kick to the other team';
+ downPossession.textContent=(scoringTeam==='blue'?'🔵 HOME':'🔴 AWAY')+' RECEIVES';
+ yardage.textContent='SAFETY · +2 POINTS';
+ status.textContent='SAFETY! '+(scoringTeam==='blue'?'HOME':'AWAY')+' gets 2 points and receives the kickoff.';
+}

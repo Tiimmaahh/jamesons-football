@@ -11,6 +11,7 @@ function updateDownDisplay(){
 }
 function end(txt){
  if(phase!=='live')return;
+ if(!conversion&&carrier&&finalTackler&&ball.x<=70){awardSafety(offenseTeam);return;}
  phase='ended';stopped=true;carrier=null;
  // The ball is spotted at its actual final position, including behind the line on a sack.
  const gain=Math.round((ball.x-LOS)/YARD_PIXELS);
